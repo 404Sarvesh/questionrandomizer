@@ -15,7 +15,6 @@
     </script>
 
     <style>
-        /* Custom Loader */
         .spinner {
             width: 48px;
             height: 48px;
@@ -28,62 +27,56 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Hide scrollbar */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen font-sans text-slate-900">
 
-    <!-- Header -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <h1 class="text-xl font-bold">AS Pure 1 <span class="text-blue-400 font-light">Randomizer</span></h1>
             </div>
-            <div class="text-xs text-slate-400">v5.1 High Clearance</div>
+            <div class="text-xs text-slate-400">v10.2 Relaxed Crop</div>
         </div>
     </header>
 
     <main class="container mx-auto p-4 flex flex-col items-center">
 
-        <!-- 1. UPLOAD SCREEN -->
+        <!-- SETUP SCREEN -->
         <div id="screen-upload" class="w-full max-w-2xl bg-white rounded-xl shadow-xl p-8 mt-10 transition-all duration-300">
             <h2 class="text-2xl font-bold text-center mb-2">Setup Session</h2>
-            <p class="text-center text-slate-500 mb-6 text-sm">Upload all your PDFs at once. We'll separate the Questions from the Mark Schemes.</p>
+            <p class="text-center text-slate-500 mb-6 text-sm">Upload QPs and MSs. We sync them by Question Number.</p>
             
-            <!-- Unified Upload Zone -->
             <div class="mb-6 p-10 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50 text-center hover:bg-blue-100 transition cursor-pointer relative group">
                 <input type="file" id="input-all" multiple accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFiles()">
                 
                 <div class="pointer-events-none flex flex-col items-center justify-center">
                     <svg class="w-12 h-12 text-blue-500 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     <p class="text-blue-800 font-bold text-lg">Drop ALL files here</p>
-                    <p class="text-blue-600 text-sm">Question Papers (qp) & Mark Schemes (ms)</p>
+                    <p class="text-blue-600 text-sm">Question Papers & Mark Schemes</p>
                 </div>
             </div>
 
-            <!-- Stats Display -->
             <div id="file-stats" class="hidden flex justify-center gap-4 mb-6">
                 <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center">
-                    <span id="count-qp" class="text-lg mr-2 font-bold">0</span> Question Papers
+                    <span id="count-qp" class="text-lg mr-2 font-bold">0</span> QPs
                 </div>
                 <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center">
-                    <span id="count-ms" class="text-lg mr-2 font-bold">0</span> Mark Schemes
+                    <span id="count-ms" class="text-lg mr-2 font-bold">0</span> MSs
                 </div>
             </div>
 
             <button id="btn-start" onclick="startProcessing()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-slate-900 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed" disabled>
                 Start Revision
             </button>
-            
-            <p class="text-center text-xs text-slate-400 mt-4">
-                Note: Files must contain "qp" or "ms" in their names to be sorted correctly (e.g., 9709_w21_qp_12.pdf).
-            </p>
         </div>
 
-        <!-- 2. LOADING SCREEN -->
+        <!-- LOADING SCREEN -->
         <div id="screen-loading" class="hidden flex flex-col items-center justify-center mt-20">
             <div class="relative">
                 <div class="spinner border-blue-500 border-t-transparent"></div>
@@ -92,10 +85,9 @@
             <p id="loading-msg" class="text-slate-500 mt-2 text-sm">Reading structure...</p>
         </div>
 
-        <!-- 3. VIEWER SCREEN -->
+        <!-- VIEWER SCREEN -->
         <div id="screen-viewer" class="hidden w-full max-w-5xl flex flex-col items-center relative">
             
-            <!-- Toolbar -->
             <div class="sticky top-4 z-30 w-full flex flex-wrap gap-4 justify-between items-center bg-white/95 backdrop-blur border border-slate-200 p-3 rounded-xl shadow-md mb-6">
                 <div class="flex items-center gap-3">
                     <span class="px-3 py-1 bg-slate-100 rounded-lg text-sm font-mono border border-slate-300 text-slate-600">
@@ -105,7 +97,7 @@
                 </div>
                 
                 <div class="flex gap-2">
-                    <button id="btn-check" onclick="toggleAnswer()" class="px-5 py-2 rounded-lg font-bold text-sm bg-amber-100 text-amber-800 hover:bg-amber-200 transition disabled:opacity-50 disabled:cursor-not-allowed border border-amber-200">
+                    <button id="btn-check" onclick="toggleAnswer()" class="px-5 py-2 rounded-lg font-bold text-sm bg-amber-100 text-amber-800 hover:bg-amber-200 transition disabled:opacity-50 disabled:cursor-not-allowed border border-amber-200 shadow-sm">
                         Check Answer
                     </button>
                     <button onclick="nextQuestion()" class="px-6 py-2 rounded-lg font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition flex items-center gap-2">
@@ -115,121 +107,98 @@
                 </div>
             </div>
 
-            <!-- Main Stage -->
             <div class="relative w-full min-h-[50vh]">
-                
                 <!-- Question Card -->
                 <div class="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden p-2 md:p-6 flex justify-center items-start min-h-[400px] transition-all">
                     <img id="img-question" class="max-w-full h-auto object-contain" alt="Question will appear here" />
                 </div>
 
                 <!-- Answer Overlay -->
-                <div id="modal-answer" class="hidden absolute inset-0 z-20 bg-white/98 backdrop-blur-sm rounded-xl border-4 border-amber-200 flex flex-col p-4">
+                <div id="modal-answer" class="hidden absolute inset-0 z-20 bg-white/98 backdrop-blur-sm rounded-xl border-4 border-amber-200 flex flex-col p-4 shadow-2xl">
                     <div class="flex justify-between items-center pb-2 border-b border-slate-100 mb-2">
                         <h3 class="font-bold text-amber-700 flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Mark Scheme
                         </h3>
-                        <button onclick="toggleAnswer()" class="text-slate-400 hover:text-slate-700 transition p-1 hover:bg-slate-100 rounded">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
+                        <div class="flex gap-2">
+                            <span class="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100">Full Context Mode</span>
+                            <button onclick="toggleAnswer()" class="text-slate-400 hover:text-slate-700 transition p-1 hover:bg-slate-100 rounded">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex-grow overflow-y-auto no-scrollbar flex justify-center items-start">
-                        <img id="img-answer" class="max-w-full h-auto object-contain opacity-95" alt="Answer Scheme" />
+                    <div class="flex-grow overflow-y-auto custom-scroll flex justify-center items-start bg-slate-50 rounded border border-slate-200">
+                        <img id="img-answer" class="max-w-full h-auto object-contain shadow-sm" alt="Answer Scheme" />
                     </div>
                 </div>
-
             </div>
             
             <p class="mt-8 text-center text-xs text-slate-400">
-                Tip: Questions are automatically cropped to remove empty working space.<br>
-                If a question looks cut off, it likely spanned multiple pages in the PDF.
+                Tip: If the answer seems long, scroll inside the answer box.
             </p>
-
         </div>
-
     </main>
 
     <script>
-        // --- DATA STORE ---
-        let filesQP = [];
-        let filesMS = [];
-        let deck = [];
-        let currentIndex = -1;
+        let filesQP = [], filesMS = [], deck = [], currentIndex = -1;
 
-        // --- UI HANDLERS ---
         function handleFiles() {
             const input = document.getElementById('input-all');
             const allFiles = Array.from(input.files);
             
-            // Reset Arrays
-            filesQP = [];
-            filesMS = [];
+            filesQP = []; filesMS = [];
 
-            // Sort Files
             allFiles.forEach(file => {
                 const name = file.name.toLowerCase();
-                if (name.includes('ms') || name.includes('mark scheme')) {
-                    filesMS.push(file);
-                } else {
-                    // Default to QP if not explicitly an MS
-                    filesQP.push(file);
-                }
+                if (name.includes('ms') || name.includes('mark scheme')) filesMS.push(file);
+                else filesQP.push(file);
             });
 
-            // Update UI
             if (allFiles.length > 0) {
                 document.getElementById('file-stats').classList.remove('hidden');
                 document.getElementById('count-qp').textContent = filesQP.length;
                 document.getElementById('count-ms').textContent = filesMS.length;
             }
-
             document.getElementById('btn-start').disabled = filesQP.length === 0;
         }
 
         async function startProcessing() {
-            // Switch Screens
             document.getElementById('screen-upload').classList.add('hidden');
             document.getElementById('screen-loading').classList.remove('hidden');
 
             deck = [];
             
             try {
-                // Process QPs
                 for (let i = 0; i < filesQP.length; i++) {
                     const f = filesQP[i];
-                    updateLoading(`Parsing Question Paper ${i+1}/${filesQP.length}...`);
+                    updateLoading(`Parsing QP ${i+1}/${filesQP.length}...`);
                     
-                    const questions = await extractPDFContent(f, 'qp');
+                    const qList = await extractPDFContent(f, 'qp');
                     
-                    // Try find MS
                     const msFile = findMatch(f.name);
-                    let answers = [];
+                    let aList = [];
                     if (msFile) {
-                        updateLoading(`Parsing Mark Scheme for ${f.name}...`);
-                        answers = await extractPDFContent(msFile, 'ms');
+                        updateLoading(`Parsing MS for ${f.name}...`);
+                        aList = await extractPDFContent(msFile, 'ms');
                     }
 
-                    // Combine
-                    questions.forEach((qImg, idx) => {
-                        deck.push({
-                            q: qImg,
-                            a: answers[idx] || null,
-                            source: f.name
+                    qList.forEach(qItem => {
+                        const matchingA = aList.find(a => a.num === qItem.num);
+                        
+                        deck.push({ 
+                            q: qItem.canvas.toDataURL(), 
+                            a: matchingA ? matchingA.canvas.toDataURL() : null, 
+                            source: f.name 
                         });
                     });
                 }
 
-                if (deck.length === 0) throw new Error("No questions found. Are these valid Cambridge PDFs?");
-
-                updateLoading("Shuffling Deck...");
+                if (deck.length === 0) throw new Error("No questions found.");
                 shuffle(deck);
 
-                // Start Viewer
                 document.getElementById('screen-loading').classList.add('hidden');
                 document.getElementById('screen-viewer').classList.remove('hidden');
                 document.getElementById('lbl-total').textContent = deck.length;
-                
                 nextQuestion();
 
             } catch (err) {
@@ -239,24 +208,17 @@
             }
         }
 
-        function updateLoading(msg) {
-            document.getElementById('loading-msg').textContent = msg;
-        }
+        function updateLoading(msg) { document.getElementById('loading-msg').textContent = msg; }
 
         function findMatch(qpName) {
-            // Logic: math_qp_11.pdf -> matches math_ms_11.pdf
-            // We search for a file in the MS list that looks like the QP name but with 'ms' instead of 'qp'
             const lowerQP = qpName.toLowerCase();
             const target = lowerQP.replace('qp', 'ms').replace('question', 'mark');
-            
-            // Try to find exact match first, then fuzzy
             return filesMS.find(f => {
                 const lowerMS = f.name.toLowerCase();
                 return lowerMS === target || (lowerMS.includes(target.replace('.pdf','')));
             });
         }
 
-        // --- CORE PDF LOGIC (SLICING) ---
         async function extractPDFContent(file, type) {
             const buffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument(buffer).promise;
@@ -265,16 +227,19 @@
             let activeSlices = [];
             let currentNum = -1;
 
-            // Margin threshold (15% for QP, 12% for MS)
-            const marginFactor = type === 'qp' ? 0.15 : 0.12;
-
-            // CLEARANCE CONSTANT
-            // Increased from 35 to 70 to handle tall math symbols (dy/dx, integrals)
-            const TOP_CLEARANCE = 70;
+            const isQP = type === 'qp';
+            const marginFactor = isQP ? 0.15 : 0.20; 
+            const TOP_CLEARANCE = isQP ? 70 : 30; 
+            const SCALE = 2.5; 
+            
+            // Reduced to 80px to capture questions high up on the page
+            const HEADER_GUARD = isQP ? 50 : 80;
 
             for (let i = 1; i <= pdf.numPages; i++) {
+                if (!isQP && i <= 3) continue;
+
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2.0 }); // High Res
+                const viewport = page.getViewport({ scale: SCALE }); 
                 
                 const canvas = document.createElement('canvas');
                 canvas.width = viewport.width;
@@ -282,37 +247,49 @@
                 const ctx = canvas.getContext('2d');
                 await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-                // Scan Markers
                 const textContent = await page.getTextContent();
                 let markers = [];
                 
                 textContent.items.forEach(item => {
-                    const x = item.transform[4] * 2.0;
-                    const y = viewport.height - (item.transform[5] * 2.0);
+                    const x = item.transform[4] * SCALE;
+                    const y = viewport.height - (item.transform[5] * SCALE);
                     const str = item.str.trim();
 
-                    // Logic: Integer 1-99, Left Margin
-                    if (/^[0-9]{1,2}$/.test(str) && x < (viewport.width * marginFactor)) {
-                        markers.push({ y, num: parseInt(str) });
+                    if (y < HEADER_GUARD || y > viewport.height - 50) return;
+
+                    let isMatch = false;
+                    let numVal = -1;
+
+                    if (isQP) {
+                        if (/^[0-9]{1,2}$/.test(str)) {
+                             isMatch = true; 
+                             numVal = parseInt(str);
+                        }
+                    } else {
+                        if (/^[0-9]{1,2}/.test(str)) {
+                            isMatch = true;
+                            numVal = parseInt(str); 
+                        }
+                    }
+
+                    if (isMatch && x < (viewport.width * marginFactor)) {
+                        markers.push({ y, num: numVal });
                     }
                 });
 
-                // Clean markers
                 markers.sort((a,b) => a.y - b.y);
-                markers = markers.filter((m, idx, arr) => idx === 0 || (m.y - arr[idx-1].y > 20));
+                markers = markers.filter((m, idx, arr) => idx === 0 || (m.y - arr[idx-1].y > 50));
 
                 if (markers.length > 0) {
-                    // Content BEFORE first marker (Previous Q continuation)
                     if (markers[0].y > 100 && currentNum !== -1) {
-                        const slice = crop(canvas, 0, markers[0].y - TOP_CLEARANCE);
-                        if (type === 'qp') autoTrim(slice);
+                        let endY = isQP ? markers[0].y - TOP_CLEARANCE : (viewport.height - 50);
+                        const slice = crop(canvas, 0, endY);
                         activeSlices.push(slice);
                     }
 
-                    // Content BETWEEN markers
                     for (let k = 0; k < markers.length; k++) {
                         if (currentNum !== -1 && activeSlices.length > 0) {
-                            extracted.push(stitch(activeSlices));
+                            extracted.push({ num: currentNum, canvas: stitch(activeSlices) });
                             activeSlices = [];
                         }
 
@@ -320,38 +297,39 @@
                         const startY = Math.max(0, markers[k].y - TOP_CLEARANCE);
                         let endY;
                         
-                        if (k < markers.length - 1) {
-                            // End the current question significantly above the next question's number
-                            // to avoid including the next question's tall headers
-                            endY = markers[k+1].y - TOP_CLEARANCE; 
+                        if (!isQP) {
+                            endY = viewport.height - 50; 
                         } else {
-                            endY = viewport.height - 50;
+                            if (k < markers.length - 1) {
+                                endY = markers[k+1].y - TOP_CLEARANCE; 
+                            } else {
+                                endY = viewport.height - 50;
+                            }
                         }
 
                         const slice = crop(canvas, startY, endY);
-                        if (type === 'qp') autoTrim(slice);
                         activeSlices.push(slice);
                     }
                 } else if (currentNum !== -1) {
-                    // Whole Page (Continuation)
-                    const slice = crop(canvas, 50, viewport.height - 50);
-                    if (type === 'qp') autoTrim(slice);
+                    // Continuation Page
+                    // MS: Cut at 150px (Relaxed cut to save Algebra, loses most of header)
+                    // QP: Cut at 50px (standard header)
+                    const startCrop = isQP ? 50 : 150;
+                    const slice = crop(canvas, startCrop, viewport.height - 50);
                     activeSlices.push(slice);
                 }
             }
 
-            if (activeSlices.length > 0) {
-                extracted.push(stitch(activeSlices));
+            if (activeSlices.length > 0 && currentNum !== -1) {
+                extracted.push({ num: currentNum, canvas: stitch(activeSlices) });
             }
 
-            return extracted.map(c => c.toDataURL());
+            return extracted;
         }
 
-        // --- GRAPHICS UTILS ---
         function crop(source, y1, y2) {
             const h = y2 - y1;
             if (h <= 0) return document.createElement('canvas');
-            
             const c = document.createElement('canvas');
             c.width = source.width;
             c.height = h;
@@ -362,49 +340,15 @@
         function stitch(parts) {
             if (parts.length === 1) return parts[0];
             const totalH = parts.reduce((acc, p) => acc + p.height, 0);
-            
             const c = document.createElement('canvas');
             c.width = parts[0].width;
             c.height = totalH;
             const ctx = c.getContext('2d');
-            
             let y = 0;
-            parts.forEach(p => {
-                ctx.drawImage(p, 0, y);
-                y += p.height;
-            });
+            parts.forEach(p => { ctx.drawImage(p, 0, y); y += p.height; });
             return c;
         }
 
-        function autoTrim(canvas) {
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            const data = ctx.getImageData(0,0,w,h).data;
-            let cropY = h;
-
-            // Scan bottom up
-            for (let y = h - 1; y > 0; y -= 5) {
-                let darkPixels = 0;
-                for (let x = 0; x < w; x += 10) {
-                    const i = (y * w + x) * 4;
-                    if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) darkPixels++;
-                }
-                if (darkPixels > 5) {
-                    cropY = y + 20;
-                    break;
-                }
-                cropY = y;
-            }
-
-            if (cropY < h) {
-                const temp = crop(canvas, 0, cropY);
-                canvas.height = temp.height;
-                canvas.getContext('2d').drawImage(temp, 0, 0);
-            }
-        }
-
-        // --- PLAYBACK ---
         function shuffle(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -435,10 +379,8 @@
 
         function toggleAnswer() {
             const modal = document.getElementById('modal-answer');
-            if (modal.classList.contains('hidden')) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
+            modal.classList.toggle('hidden');
         }
-
     </script>
 </body>
 </html>
