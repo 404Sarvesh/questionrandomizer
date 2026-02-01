@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cambridge AS Pure 1 | Pro Revision</title>
+    <title>Cambridge AS Pure 1 | Revision</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,14 +13,19 @@
             theme: {
                 extend: {
                     colors: {
-                        slate: {
-                            850: '#1e293b',
+                        dark: {
                             900: '#0f172a',
-                            950: '#020617',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        brand: {
+                            500: '#3b82f6', // Blue
+                            600: '#2563eb',
                         }
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                    boxShadow: {
+                        'paper': '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)',
+                        'glow': '0 0 15px rgba(59, 130, 246, 0.3)',
                     }
                 }
             }
@@ -34,145 +39,156 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
+            background: radial-gradient(circle at top center, #1e293b 0%, #020617 100%);
+            background-attachment: fixed;
         }
 
-        .loader {
+        .spinner {
+            width: 48px;
+            height: 48px;
             border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: #3b82f6;
+            border-left-color: #60a5fa;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Scrollbar for modal */
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .modal-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="min-h-screen text-slate-200">
+<body class="min-h-screen text-slate-200 font-sans selection:bg-brand-500 selection:text-white">
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-slate-900/95 border-b border-slate-800 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 rounded p-1.5">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-lg leading-tight text-white">AS Level Pure 1</h1>
-                        <p class="text-xs text-slate-500 font-medium">Randomizer v16.0</p>
-                    </div>
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-dark-700/50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-lg shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 3.666V19a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2h-6m-4-7h6"></path></svg>
                 </div>
-                <div class="text-xs font-mono bg-slate-800 px-3 py-1 rounded text-slate-400 border border-slate-700">
-                    Ready
+                <div class="leading-none">
+                    <h1 class="font-bold text-lg text-white tracking-tight">AS Level Pure 1</h1>
+                    <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold">Randomizer v17.0</span>
                 </div>
             </div>
+            
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                <span class="text-xs text-slate-400 font-medium">System Ready</span>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8 flex flex-col items-center min-h-[calc(100vh-64px)]">
+    <main class="container mx-auto px-4 pt-24 pb-12 flex flex-col items-center">
 
-        <!-- SETUP PANEL -->
-        <div id="screen-upload" class="w-full max-w-xl mt-10">
-            <div class="bg-slate-800 rounded-xl border border-slate-700 p-8 shadow-xl">
+        <!-- 1. SETUP PANEL -->
+        <div id="screen-upload" class="w-full max-w-xl transition-all duration-500 transform">
+            <div class="bg-dark-800/50 backdrop-blur-sm border border-dark-700 rounded-2xl p-8 shadow-2xl">
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold text-white mb-2">Upload Papers</h2>
-                    <p class="text-slate-400 text-sm">Select both Question Papers (QP) and Mark Schemes (MS).</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Session Setup</h2>
+                    <p class="text-slate-400 text-sm">Upload Question Papers & Mark Schemes.</p>
                 </div>
 
-                <div class="relative group cursor-pointer mb-6">
-                    <input type="file" id="input-all" multiple accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer" onchange="handleFiles()">
-                    <div class="border-2 border-dashed border-slate-600 rounded-lg p-10 flex flex-col items-center justify-center transition-colors group-hover:border-blue-500 group-hover:bg-slate-700/50">
-                        <svg class="w-12 h-12 text-slate-500 mb-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <span class="text-sm font-medium text-slate-300">Click to upload files</span>
-                        <span class="text-xs text-slate-500 mt-1">PDF format only</span>
+                <div class="relative group mb-6">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-20 group-hover:opacity-40 transition duration-300 blur"></div>
+                    <div class="relative bg-dark-900 border-2 border-dashed border-dark-700 rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition group-hover:border-blue-500/50">
+                        <input type="file" id="input-all" multiple accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFiles()">
+                        <svg class="w-12 h-12 text-slate-500 mb-3 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <p class="text-sm font-medium text-slate-300">Drag & Drop PDFs</p>
+                        <p class="text-xs text-slate-500 mt-1">Files are matched automatically</p>
                     </div>
                 </div>
 
                 <div id="file-stats" class="hidden grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-slate-900/50 border border-slate-700 p-3 rounded-lg flex items-center justify-between">
+                    <div class="bg-dark-900/80 p-3 rounded-lg border border-dark-700 flex justify-between items-center">
                         <span class="text-sm text-slate-400">Questions</span>
                         <span id="count-qp" class="text-sm font-bold text-blue-400">0</span>
                     </div>
-                    <div class="bg-slate-900/50 border border-slate-700 p-3 rounded-lg flex items-center justify-between">
-                        <span class="text-sm text-slate-400">Mark Schemes</span>
-                        <span id="count-ms" class="text-sm font-bold text-green-400">0</span>
+                    <div class="bg-dark-900/80 p-3 rounded-lg border border-dark-700 flex justify-between items-center">
+                        <span class="text-sm text-slate-400">Answers</span>
+                        <span id="count-ms" class="text-sm font-bold text-emerald-400">0</span>
                     </div>
                 </div>
 
-                <button id="btn-start" onclick="startProcessing()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    Start Session
+                <button id="btn-start" onclick="startProcessing()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-xl shadow-glow transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" disabled>
+                    Start Revision
                 </button>
             </div>
         </div>
 
-        <!-- LOADING PANEL -->
-        <div id="screen-loading" class="hidden flex flex-col items-center justify-center mt-32">
-            <div class="loader mb-6"></div>
-            <h3 class="text-xl font-semibold text-white">Processing Documents</h3>
-            <p id="loading-msg" class="text-slate-400 text-sm mt-2">Initializing...</p>
+        <!-- 2. LOADING PANEL -->
+        <div id="screen-loading" class="hidden flex flex-col items-center justify-center mt-20">
+            <div class="relative mb-6">
+                <div class="absolute inset-0 bg-blue-500 blur-xl opacity-20 rounded-full"></div>
+                <div class="spinner relative z-10"></div>
+            </div>
+            <h3 class="text-xl font-bold text-white">Analyzing Papers</h3>
+            <p id="loading-msg" class="text-slate-400 text-sm mt-2 font-mono">Parsing structure...</p>
         </div>
 
-        <!-- VIEWER PANEL -->
-        <div id="screen-viewer" class="hidden w-full relative">
+        <!-- 3. VIEWER PANEL -->
+        <div id="screen-viewer" class="hidden w-full max-w-5xl relative">
             
-            <!-- Controls Bar -->
-            <div class="sticky top-20 z-40 bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-lg mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- Floating Controls -->
+            <div class="sticky top-20 z-40 mb-8 bg-dark-800/90 backdrop-blur-md border border-dark-700 rounded-2xl p-2 shadow-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
                 
-                <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <div class="bg-slate-900 border border-slate-700 px-4 py-2 rounded-lg flex items-baseline gap-2">
-                        <span class="text-xs text-slate-500 uppercase font-bold">Question</span>
-                        <span class="font-mono font-bold text-white"><span id="lbl-current">1</span><span class="text-slate-600 mx-1">/</span><span id="lbl-total">?</span></span>
+                <div class="flex items-center gap-4 px-2">
+                    <div class="bg-dark-900 border border-dark-700 rounded-lg px-4 py-2 flex items-baseline gap-2">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Question</span>
+                        <span class="text-white font-mono font-bold"><span id="lbl-current">1</span><span class="text-slate-600 mx-1">/</span><span id="lbl-total">10</span></span>
                     </div>
-                    <div id="lbl-source" class="text-xs text-slate-500 truncate max-w-[150px] hidden sm:block"></div>
+                    <div id="lbl-source" class="hidden sm:block text-xs font-mono text-slate-500 truncate max-w-[200px]"></div>
                 </div>
 
-                <div class="flex gap-3 w-full sm:w-auto">
-                    <button id="btn-check" onclick="toggleAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-amber-400 border border-slate-600 rounded-lg font-medium text-sm transition-colors disabled:opacity-50">
-                        Check Answer
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="toggleAnswer()" class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-sm bg-dark-700 text-amber-400 border border-dark-600 hover:bg-dark-600 hover:text-amber-300 transition-colors shadow-sm">
+                        Show Answer
                     </button>
-                    <button onclick="nextQuestion()" class="flex-1 sm:flex-none px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                    <button onclick="nextQuestion()" class="flex-1 sm:flex-none px-8 py-2.5 rounded-xl font-bold text-sm bg-brand-600 text-white hover:bg-brand-500 shadow-glow transition-all flex items-center justify-center gap-2 group">
                         Next
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                     </button>
                 </div>
             </div>
 
-            <!-- Viewport -->
-            <div class="relative w-full">
+            <!-- Card Stage -->
+            <div class="relative w-full min-h-[500px]">
                 
-                <!-- Question Image Container -->
-                <!-- Important: White background to ensure PDF ink is visible -->
-                <div class="bg-white rounded-xl shadow-xl overflow-hidden min-h-[400px] flex justify-center items-start p-4 border border-slate-600">
+                <!-- Question Sheet (Looks like paper on desk) -->
+                <div class="bg-white rounded-xl shadow-paper border-t-4 border-slate-200 overflow-hidden min-h-[500px] flex justify-center items-start p-6 md:p-10 relative z-10">
+                    <!-- Paper texture/noise could go here -->
                     <img id="img-question" class="max-w-full h-auto object-contain" alt="Question" />
                 </div>
 
-                <!-- Answer Modal -->
-                <div id="modal-answer" class="hidden absolute inset-0 z-50 bg-slate-900/95 backdrop-blur rounded-xl border border-slate-600 flex flex-col p-1 overflow-hidden">
-                    <div class="flex justify-between items-center p-3 bg-slate-800 border-b border-slate-700">
-                        <span class="text-sm font-bold text-emerald-400 flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            Mark Scheme
-                        </span>
-                        <button onclick="toggleAnswer()" class="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700">
+                <!-- Answer Modal (Overlay) -->
+                <div id="modal-answer" class="hidden absolute inset-0 z-50 bg-dark-900/95 backdrop-blur-sm rounded-xl border border-dark-600 flex flex-col p-1 shadow-2xl transition-opacity duration-200">
+                    <div class="flex justify-between items-center p-3 bg-dark-800 border-b border-dark-700 rounded-t-lg">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span class="text-sm font-bold text-slate-200">Mark Scheme</span>
+                            <span class="text-xs text-slate-500 ml-2 bg-dark-900 px-2 py-0.5 rounded">Full Context Mode</span>
+                        </div>
+                        <button onclick="toggleAnswer()" class="text-slate-400 hover:text-white p-1 rounded hover:bg-dark-700 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
-                    <div class="flex-grow overflow-y-auto p-4 flex justify-center items-start bg-slate-100">
-                        <div class="bg-white p-2 rounded shadow-sm w-full flex justify-center">
-                            <img id="img-answer" class="max-w-full h-auto object-contain" alt="Answer" />
+                    
+                    <div class="flex-grow overflow-y-auto modal-scroll p-4 bg-slate-100 rounded-b-lg flex justify-center items-start">
+                        <!-- Answer Paper -->
+                        <div class="bg-white p-4 rounded shadow-sm w-full flex justify-center border border-slate-300">
+                            <img id="img-answer" class="max-w-full h-auto object-contain" alt="Answer Scheme" />
                         </div>
                     </div>
                 </div>
 
             </div>
             
-            <p class="mt-6 text-center text-xs text-slate-600 font-mono">
-                Press [Space] to toggle answer, [Right Arrow] for next.
+            <p class="mt-8 text-center text-xs text-slate-500 font-mono">
+                Keyboard: [Space] Answer • [Right Arrow] Next
             </p>
 
         </div>
@@ -182,7 +198,6 @@
     <script>
         let filesQP = [], filesMS = [], deck = [], currentIndex = -1;
 
-        // Keyboard Shortcuts
         document.addEventListener('keydown', (e) => {
             if(document.getElementById('screen-viewer').classList.contains('hidden')) return;
             if(e.code === 'Space') { e.preventDefault(); toggleAnswer(); }
@@ -218,13 +233,14 @@
             try {
                 for (let i = 0; i < filesQP.length; i++) {
                     const f = filesQP[i];
-                    updateLoading(`Parsing ${f.name}...`);
+                    updateLoading(`Parsing QP ${i+1}/${filesQP.length}...`);
                     
                     const qList = await extractPDFContent(f, 'qp');
                     
                     const msFile = findMatch(f.name);
                     let aList = [];
                     if (msFile) {
+                        updateLoading(`Parsing MS for ${f.name}...`);
                         aList = await extractPDFContent(msFile, 'ms');
                     }
 
@@ -238,7 +254,7 @@
                     });
                 }
 
-                if (deck.length === 0) throw new Error("No valid questions detected.");
+                if (deck.length === 0) throw new Error("No questions found.");
                 shuffle(deck);
 
                 document.getElementById('screen-loading').classList.add('hidden');
@@ -279,7 +295,7 @@
             const HEADER_GUARD = isQP ? 50 : 60;
 
             for (let i = 1; i <= pdf.numPages; i++) {
-                if (!isQP && i <= 3) continue; // Skip first 3 pages of MS
+                if (!isQP && i <= 3) continue;
 
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({ scale: SCALE }); 
@@ -289,15 +305,13 @@
                 canvas.height = viewport.height;
                 const ctx = canvas.getContext('2d');
                 
-                // IMPORTANT: Fill white background to support dark mode
+                // IMPORTANT: Fill white background for dark mode support
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
                 const textContent = await page.getTextContent();
-                
-                // Text-based Blank Page Detection
                 const fullText = textContent.items.map(i => i.str).join(' ');
                 const isJunkPage = /BLANK PAGE|Additional Page/i.test(fullText);
                 
@@ -327,7 +341,6 @@
                 markers.sort((a,b) => a.y - b.y);
                 markers = markers.filter((m, idx, arr) => idx === 0 || (m.y - arr[idx-1].y > 50));
 
-                // Junk Page Logic
                 if (isJunkPage && markers.length === 0) {
                     if (currentNum !== -1 && activeSlices.length > 0) {
                         extracted.push({ num: currentNum, canvas: stitch(activeSlices) });
@@ -338,17 +351,15 @@
                 }
 
                 if (markers.length > 0) {
-                    // 1. Tail of previous question
                     if (markers[0].y > 100 && currentNum !== -1) {
-                        let endY = markers[0].y - TOP_CLEARANCE;
+                        let endY = isQP ? markers[0].y - TOP_CLEARANCE : (viewport.height - 50);
+                        // Tail Crop: Start after header
                         let startY = isQP ? 50 : 60;
                         const slice = crop(canvas, startY, endY);
                         if (hasInk(slice)) activeSlices.push(slice);
                     }
 
-                    // 2. Questions on this page
                     for (let k = 0; k < markers.length; k++) {
-                        // Save previous
                         if (currentNum !== -1 && activeSlices.length > 0) {
                             extracted.push({ num: currentNum, canvas: stitch(activeSlices) });
                             activeSlices = [];
@@ -358,25 +369,27 @@
                         const startY = Math.max(0, markers[k].y - TOP_CLEARANCE);
                         let endY;
                         
-                        // Always cut at next marker or end of page
-                        if (k < markers.length - 1) {
-                            endY = markers[k+1].y - TOP_CLEARANCE; 
+                        // MS LOGIC REVERTED: Capture to bottom of page
+                        if (!isQP) {
+                            endY = viewport.height - 50; 
                         } else {
-                            endY = viewport.height - 50;
+                            if (k < markers.length - 1) {
+                                endY = markers[k+1].y - TOP_CLEARANCE; 
+                            } else {
+                                endY = viewport.height - 50;
+                            }
                         }
 
                         const slice = crop(canvas, startY, endY);
                         if (hasInk(slice)) activeSlices.push(slice);
                     }
                 } else if (currentNum !== -1) {
-                    // 3. Continuation Page
                     const startCrop = isQP ? 50 : 60;
                     const slice = crop(canvas, startCrop, viewport.height - 50);
                     if (hasInk(slice)) activeSlices.push(slice);
                 }
             }
 
-            // Flush final question
             if (activeSlices.length > 0 && currentNum !== -1) {
                 extracted.push({ num: currentNum, canvas: stitch(activeSlices) });
             }
@@ -392,10 +405,8 @@
             const ctx = canvas.getContext('2d');
             const data = ctx.getImageData(0,0,w,h).data;
             let darkPixels = 0;
-            // Scan for ink
             for (let i = 0; i < data.length; i += 40) { 
                 const r = data[i], g = data[i+1], b = data[i+2];
-                // Not white
                 if (r < 240 || g < 240 || b < 240) { 
                     darkPixels++;
                     if (darkPixels > 100) return true; 
@@ -425,10 +436,8 @@
             c.width = parts[0].width;
             c.height = totalH;
             const ctx = c.getContext('2d');
-            // Force white bg
             ctx.fillStyle = "#FFFFFF";
             ctx.fillRect(0,0,c.width, c.height);
-            
             let y = 0;
             parts.forEach(p => { ctx.drawImage(p, 0, y); y += p.height; });
             return c;
@@ -451,14 +460,13 @@
             document.getElementById('lbl-source').textContent = card.source.replace('.pdf', '');
 
             const btn = document.getElementById('btn-check');
-            const ansImg = document.getElementById('img-answer');
             
             if (card.a) {
                 btn.disabled = false;
-                ansImg.src = card.a;
+                document.getElementById('img-answer').src = card.a;
             } else {
                 btn.disabled = true;
-                ansImg.src = '';
+                document.getElementById('img-answer').src = '';
             }
         }
 
